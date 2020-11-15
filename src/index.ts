@@ -15,7 +15,7 @@ class Program
 
     async Execute() {
         const csvReader : CsvReader = this._csvReaderFactory.Create(
-            'chatbots.csv'
+            './chatbots.csv'
         )
 
         const chatbots : Array<Chatbot> = await csvReader.ReadChatbotsFromCsvAsync();

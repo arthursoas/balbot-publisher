@@ -1,0 +1,27 @@
+{
+  "name": "balbot-publisher",
+  "version": "1.0.0",
+  "description": "Script to publish Balbot flow on Take Blip",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node-dev --ignore-watch node_modules src/index.ts",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arthursoas/balbot-publisher.git"
+  },
+  "author": "Arthur Soares",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arthursoas/balbot-publisher/issues"
+  },
+  "homepage": "https://github.com/arthursoas/balbot-publisher#readme",
+  "type": "module",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^14.14.7",
+    "ts-node-dev": "^1.0.0",
+    "typescript": "^4.0.5"
+  }
+}

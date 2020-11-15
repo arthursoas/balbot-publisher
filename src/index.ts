@@ -1,31 +1,30 @@
-import IFactory from './IFactory';
-import Chatbot from './chatbot/Chatbot';
-import ChatbotFactory from './chatbot/ChatbotFactory';
+import IFactory from './iFactory';
+import CsvReader from './csvReader/csvReader';
+import CsvReaderFactory from './csvReader/csvReaderFactory';
+import Chatbot from './chatbot/chatbot';
 
 class Program
 {
-    private _chatbotFactory : IFactory<Chatbot>;
+    private _csvReaderFactory : IFactory<CsvReader>;
 
     constructor(
-        chatbotFactory: IFactory<Chatbot>)
-    {
-        this._chatbotFactory = chatbotFactory;
-
-        this.Init();
+        csvReaderFactory: IFactory<CsvReader>
+    ) {
+        this._csvReaderFactory = csvReaderFactory;
     }
 
-    Init() { }
+    async Execute() {
+        const csvReader : CsvReader = this._csvReaderFactory.Create(
+            'chatbots.csv'
+        )
 
-    Execute()
-    {
-        const chatbot : Chatbot = this._chatbotFactory.Create(1, 2, 3);
-
-        console.log(chatbot);
+        const chatbots : Array<Chatbot> = await csvReader.ReadChatbotsFromCsvAsync();
+        console.log(chatbots);
     }
 }
 
 const program = new Program(
-    new ChatbotFactory()
+    new CsvReaderFactory()
 );
 
 program.Execute();

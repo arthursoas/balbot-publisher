@@ -1,7 +1,7 @@
-import IFactory from '../iFactory';
-import Chatbot from './chatbot';
+import { IFactory } from '../iFactory';
+import { Chatbot } from './chatbot';
 
-export default class ChatbotFactory implements IFactory<Chatbot>
+export class ChatbotFactory implements IFactory<Chatbot>
 {
     Create(...args: string[]) : Chatbot {
         if (args.length == 0) return new Chatbot();

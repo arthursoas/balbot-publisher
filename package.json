@@ -19,6 +19,7 @@
   "homepage": "https://github.com/arthursoas/balbot-publisher#readme",
   "type": "module",
   "dependencies": {
+    "axios": "^0.21.0",
     "csv-parser": "^2.3.3"
   },
   "devDependencies": {

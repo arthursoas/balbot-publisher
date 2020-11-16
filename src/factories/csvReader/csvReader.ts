@@ -1,10 +1,10 @@
 import fs from 'fs';
 import csv from 'csv-parser';
-import IFactory from '../iFactory';
-import Chatbot from '../chatbot/chatbot';
+import { IFactory } from '../iFactory';
+import { Chatbot } from '../chatbot/chatbot';
 
-export default class CsvReader {
-    private _chatbotFactory : IFactory<Chatbot>;
+export class CsvReader {
+    private _chatbotFactory: IFactory<Chatbot>;
     public FilePath!: string;
 
     constructor(
@@ -13,8 +13,8 @@ export default class CsvReader {
         this._chatbotFactory = chatbotFactory;
     }
 
-    async ReadChatbotsFromCsvAsync() : Promise<Array<Chatbot>> {
-        const results : Array<Chatbot> = [];
+    async ReadChatbotsFromCsvAsync(): Promise<Array<Chatbot>> {
+        const results: Array<Chatbot> = [];
         var csvBuffer = fs
             .createReadStream(this.FilePath)
             .pipe(csv())

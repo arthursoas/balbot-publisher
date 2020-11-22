@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
-import { Chatbot } from '../factories/chatbot/chatbot';
+import { Chatbot } from '../../factories/chatbot/chatbot';
 import { IBlipService } from './iBlipService';
 
-export default class BlipService implements IBlipService {
+export class BlipService implements IBlipService {
     public async UpdateChatbotFlowAsync(chatbot: Chatbot, flow: any): Promise<void> {
         var result: AxiosResponse<any> = await axios.post(
             chatbot.ClusterUrl,
@@ -19,15 +19,17 @@ export default class BlipService implements IBlipService {
             }
         )
 
-        this.CheckResult(result);
+        this.CheckBlipResponse(result);
     };
 
-    private CheckResult(result: AxiosResponse<any>) {
-        if (result.status % 200 < 100) return;
+    private CheckBlipResponse(result: AxiosResponse<any>): undefined {
+        if ((result.status >= 200 && result.status < 300)
+            && result.data['code'] === undefined) return;
 
-        var description: string = '';
-        if (result.data['reason']) {
-            description = result.data['reason']['description']
+        let description: string = '';
+        if (result.data['description']) {
+            description += `(${result.data['code']}) `;
+            description += `${result.data['description']}`;
         };
 
         throw new Error(`(${result.status}) Blip request failed with the error: ${description}`)

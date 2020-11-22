@@ -1,4 +1,4 @@
-import { Chatbot } from "../factories/chatbot/chatbot";
+import { Chatbot } from '../../factories/chatbot/chatbot';
 
 export interface IBlipService {
     /**

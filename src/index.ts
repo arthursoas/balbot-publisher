@@ -37,8 +37,7 @@ class Program
 
         const publishings: Array<Promise<void>> = chatbots.map(async (chatbot) => {
             try {
-                await this._blipService
-                    .UpdateChatbotFlowAsync(chatbot, balbotFlow)
+                await this._blipService.UpdateChatbotFlowAsync(chatbot, balbotFlow)
             }
             catch (exception: any) {
                 this._loggerService.Error(

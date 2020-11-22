@@ -14,7 +14,7 @@ Download the project to a local directory:
 git clone https://github.com/arthursoas/balbot-publisher.git
 ```
 
-Edit the file `chatbots.csv` using your chatbots data (on chatbot per row). To get chatbot `Key` and `CommandUrl` access the article on [Help Center](https://help.blip.ai/docs/en/api-sdks/como-encontrar-a-api-key-do-meu-bot/#docsNav)
+Edit the file `chatbots.csv` using your chatbots data (one chatbot per row). To get chatbot `Key` and `CommandUrl` access the article on [Help Center](https://help.blip.ai/docs/en/api-sdks/como-encontrar-a-api-key-do-meu-bot/#docsNav)
 
 Install script dependencies
 ```sh

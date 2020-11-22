@@ -52,7 +52,7 @@ export class BlipConverters {
     }
 
     private static CreateInputActions(contentActions: any, enteringActions: any): Array<any> {
-        const inputActions: Array<any> = contentActions
+        let inputActions: Array<any> = contentActions
             .filter((action: any) => (Boolean(action.action)) )
             .map((action: any) => (
                 {
@@ -68,15 +68,13 @@ export class BlipConverters {
                 }
             ));
 
-        inputActions.concat(enteringActions.map((action: any) => (
+        return inputActions.concat(enteringActions.map((action: any) => (
             {
                 type: action.type,
                 settings: action.settings,
                 conditions: action.conditions
             }
         )));
-
-        return inputActions;
     }
 
     private static CreateOuputActions(leavingActions: any): Array<any> {

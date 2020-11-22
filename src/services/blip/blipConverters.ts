@@ -13,10 +13,12 @@ export class BlipConverters {
                 root: flowState.root || false,
                 name: flowState['$title'],
                 inputActions: this.CreateInputActions(
-                    flowState['$contentActions']),
+                    flowState['$contentActions'],
+                    flowState['$enteringCustomActions']),
                 input: this.CreateInput(
                     flowState['$contentActions']),
-                outputActions: [],
+                outputActions: this.CreateOuputActions(
+                    flowState['$leavingCustomActions']),
                 outputs: this.CreateOutputs(
                     flowState['$conditionOutputs'],
                     flowState['$defaultOutput'])
@@ -49,8 +51,8 @@ export class BlipConverters {
         };
     }
 
-    private static CreateInputActions(contentActions: any): Array<any> {
-        return contentActions
+    private static CreateInputActions(contentActions: any, enteringActions: any): Array<any> {
+        const inputActions: Array<any> = contentActions
             .filter((action: any) => (Boolean(action.action)) )
             .map((action: any) => (
                 {
@@ -65,6 +67,26 @@ export class BlipConverters {
                     }
                 }
             ));
+
+        inputActions.concat(enteringActions.map((action: any) => (
+            {
+                type: action.type,
+                settings: action.settings,
+                conditions: action.conditions
+            }
+        )));
+
+        return inputActions;
+    }
+
+    private static CreateOuputActions(leavingActions: any): Array<any> {
+        return leavingActions.map((action: any) => (
+            {
+                type: action.type,
+                settings: action.settings,
+                conditions: action.conditions
+            }
+        ));
     }
 
     private static CreateInput(contentActions: any): any {

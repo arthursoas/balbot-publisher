@@ -19,8 +19,10 @@
   "homepage": "https://github.com/arthursoas/balbot-publisher#readme",
   "type": "module",
   "dependencies": {
+    "@types/uuid": "^8.3.0",
     "axios": "^0.21.0",
-    "csv-parser": "^2.3.3"
+    "csv-parser": "^2.3.3",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
     "@types/node": "^14.14.7",

@@ -1,6 +1,6 @@
 # Balbot Publisher
 
-Balbot publish is a nodejs script for publishing Balbot conversational flow on several chatbots on Take Blip.
+Balbot publisher is a nodejs script for publishing Balbot conversational flow on several chatbots on Take Blip.
 It purpose is avoiding the necessity to apply flow changes manually in each bot when some update is released.
 
 ### What is Balbot

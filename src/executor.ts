@@ -27,7 +27,7 @@ export class Executor
     async Execute() {
         const csvReader : CsvReader = this._csvReaderFactory
             .Create(
-                './chatbots.csv',
+                process.env.CHATBOTS_CSV_FILE_PATH,
                 this._chatbotFactory);
 
         const chatbots: Array<Chatbot> = await csvReader.ReadChatbotsFromCsvAsync();

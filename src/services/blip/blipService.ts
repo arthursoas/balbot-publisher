@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { Chatbot } from '../../factories/chatbot/chatbot';
 import { IBlipService } from './iBlipService';
-import { BlipConverters } from './blipConverters';
+import { BlipOperations } from './blipOperations';
 
 export class BlipService implements IBlipService {
     public async UpdateChatbotFlowAsync(chatbot: Chatbot, flow: any): Promise<void> {
@@ -15,7 +15,7 @@ export class BlipService implements IBlipService {
     };
 
     public async PublishChatbotFlowAsync(chatbot: Chatbot, flow: any): Promise<void> {
-        const application: any = BlipConverters.ConvertFlowToApplication(chatbot, flow);
+        const application: any = BlipOperations.ConvertFlowToApplication(chatbot, flow);
 
         await this.MakeBlipHttpRequestAsync(
             chatbot,
@@ -27,7 +27,6 @@ export class BlipService implements IBlipService {
                 Application: {...application}
             }
         );
-
         await this.MakeBlipHttpRequestAsync(
             chatbot,
             'set',
@@ -35,9 +34,53 @@ export class BlipService implements IBlipService {
             'application/json',
             flow
         );
+
+        const configurationUris: string[] = [
+            '/buckets/blip_portal:builder_working_configuration',
+            '/buckets/blip_portal:builder_published_configuration'
+        ]
+        configurationUris.forEach(async (configurationUri) => {
+            await this.MakeBlipHttpRequestAsync(
+                chatbot,
+                'set',
+                configurationUri,
+                'application/json',
+                application.settings.flow.configuration
+            );
+        });
+
+        const publications = await this.MakeBlipHttpRequestAsync(
+            chatbot,
+            'get',
+            '/buckets/blip_portal:builder_latestpublications?$take=100'
+        );
+        const newPublications = BlipOperations.AddReleaseToPublications(publications)
+        await this.MakeBlipHttpRequestAsync(
+            chatbot,
+            'set',
+            '/buckets/blip_portal:builder_latestpublications',
+            'application/json',
+            newPublications
+        );
+        await this.MakeBlipHttpRequestAsync(
+            chatbot,
+            'set',
+            `/buckets/blip_portal:builder_latestpublications:${newPublications.lastInsertedIndex}`,
+            'application/json',
+            {
+                configuration: application.settings.flow.configuration,
+                flow: flow
+            }
+        );
     }
 
-    private async MakeBlipHttpRequestAsync(chatbot: Chatbot, method: string, uri: string, type: string, resource: any): Promise<void> {
+    private async MakeBlipHttpRequestAsync(
+        chatbot: Chatbot,
+        method: string,
+        uri: string,
+        type: string | undefined = undefined,
+        resource: any = undefined): Promise<any>
+    {
         const response: AxiosResponse<any> = await axios.post(
             chatbot.CommandUrl,
             {
@@ -54,6 +97,8 @@ export class BlipService implements IBlipService {
         );
 
         this.CheckBlipResponse(response);
+
+        if (response.data.resource) return response.data.resource;
     }
 
     private CheckBlipResponse(result: AxiosResponse<any>): undefined {
@@ -66,6 +111,6 @@ export class BlipService implements IBlipService {
             description += `${result.data['description']}`;
         };
 
-        throw new Error(`(${result.status}) Blip request failed with the error: ${description}`)
+        throw new Error(`(${result.status}) Blip request failed with the error: ${description}`);
     }
 };

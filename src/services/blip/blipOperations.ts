@@ -1,7 +1,28 @@
 import { v4 } from 'uuid';
 import { Chatbot } from '../../factories/chatbot/chatbot';
 
-export class BlipConverters {
+export class BlipOperations {
+    public static AddReleaseToPublications(latestPublications: any): any {
+        const pubs: Array<any> = [...latestPublications.publications];
+
+        pubs.sort((pub1: any, pub2: any) => (
+            (pub1.index > pub2.index) ? 1 : -1
+        ))
+        if (pubs.length >= 5) pubs.shift();
+
+        const index = pubs[pubs.length - 1].index + 1;
+        pubs.push({
+            name: `Balbot v${process.env.BALBOT_VERSION}`,
+            publishedAt: new Date().toISOString(),
+            index: index
+        })
+
+        return {
+            lastInsertedIndex: index,
+            publications: pubs
+        };
+    }
+
     public static ConvertFlowToApplication(chatbot: Chatbot, flow: any): any {
         const application = this.CreateApplicationBase(chatbot);
 

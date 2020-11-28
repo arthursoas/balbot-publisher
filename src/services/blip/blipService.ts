@@ -52,7 +52,10 @@ export class BlipService implements IBlipService {
         const publications = await this.MakeBlipHttpRequestAsync(
             chatbot,
             'get',
-            '/buckets/blip_portal:builder_latestpublications?$take=100'
+            '/buckets/blip_portal:builder_latestpublications?$take=100',
+            undefined,
+            undefined,
+            true
         );
         const newPublications = BlipOperations.AddReleaseToPublications(publications)
         await this.MakeBlipHttpRequestAsync(
@@ -79,7 +82,8 @@ export class BlipService implements IBlipService {
         method: string,
         uri: string,
         type: string | undefined = undefined,
-        resource: any = undefined): Promise<any>
+        resource: any = undefined,
+        ignoreErrors: boolean = false): Promise<any>
     {
         const response: AxiosResponse<any> = await axios.post(
             chatbot.CommandUrl,
@@ -95,8 +99,7 @@ export class BlipService implements IBlipService {
                 validateStatus: function (): boolean { return true; }
             }
         );
-
-        this.CheckBlipResponse(response);
+        if (!ignoreErrors) this.CheckBlipResponse(response);
 
         if (response.data.resource) return response.data.resource;
     }

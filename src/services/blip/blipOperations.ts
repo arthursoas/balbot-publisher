@@ -3,14 +3,17 @@ import { Chatbot } from '../../factories/chatbot/chatbot';
 
 export class BlipOperations {
     public static AddReleaseToPublications(latestPublications: any): any {
-        const pubs: Array<any> = [...latestPublications.publications];
+        let pubs: Array<any> = [];
+        if (latestPublications && latestPublications.publications) {
+            pubs = [...latestPublications.publications];
+        }
 
         pubs.sort((pub1: any, pub2: any) => (
             (pub1.index > pub2.index) ? 1 : -1
         ))
         if (pubs.length >= 5) pubs.shift();
 
-        const index = pubs[pubs.length - 1].index + 1;
+        const index = (pubs.length > 0) ? (pubs[pubs.length - 1].index + 1) : 0;
         pubs.push({
             name: `Balbot v${process.env.BALBOT_VERSION}`,
             publishedAt: new Date().toISOString(),

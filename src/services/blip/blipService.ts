@@ -16,38 +16,39 @@ export class BlipService implements IBlipService {
 
     public async PublishChatbotFlowAsync(chatbot: Chatbot, flow: any): Promise<void> {
         const application: any = BlipOperations.ConvertFlowToApplication(chatbot, flow);
-
-        await this.MakeBlipHttpRequestAsync(
-            chatbot,
-            'set',
-            'lime://builder.hosting@msging.net/configuration',
-            'application/json',
-            {
-                Template: 'builder',
-                Application: {...application}
-            }
-        );
-        await this.MakeBlipHttpRequestAsync(
-            chatbot,
-            'set',
-            '/buckets/blip_portal:builder_published_flow',
-            'application/json',
-            flow
-        );
-
+        const configurationRequests: Array<Promise<void>> = [
+            this.MakeBlipHttpRequestAsync(
+                chatbot,
+                'set',
+                'lime://builder.hosting@msging.net/configuration',
+                'application/json',
+                {
+                    Template: 'builder',
+                    Application: {...application}
+                }
+            ),
+            this.MakeBlipHttpRequestAsync(
+                chatbot,
+                'set',
+                '/buckets/blip_portal:builder_published_flow',
+                'application/json',
+                flow
+            )
+        ];
         const configurationUris: string[] = [
             '/buckets/blip_portal:builder_working_configuration',
             '/buckets/blip_portal:builder_published_configuration'
         ]
         configurationUris.forEach(async (configurationUri) => {
-            await this.MakeBlipHttpRequestAsync(
+            configurationRequests.push(this.MakeBlipHttpRequestAsync(
                 chatbot,
                 'set',
                 configurationUri,
                 'application/json',
                 application.settings.flow.configuration
-            );
+            ));
         });
+        await Promise.all(configurationRequests);
 
         const publications = await this.MakeBlipHttpRequestAsync(
             chatbot,
@@ -58,23 +59,26 @@ export class BlipService implements IBlipService {
             true
         );
         const newPublications = BlipOperations.AddReleaseToPublications(publications)
-        await this.MakeBlipHttpRequestAsync(
-            chatbot,
-            'set',
-            '/buckets/blip_portal:builder_latestpublications',
-            'application/json',
-            newPublications
-        );
-        await this.MakeBlipHttpRequestAsync(
-            chatbot,
-            'set',
-            `/buckets/blip_portal:builder_latestpublications:${newPublications.lastInsertedIndex}`,
-            'application/json',
-            {
-                configuration: application.settings.flow.configuration,
-                flow: flow
-            }
-        );
+        const latestPublicationsRequests: Array<Promise<void>> = [
+            this.MakeBlipHttpRequestAsync(
+                chatbot,
+                'set',
+                '/buckets/blip_portal:builder_latestpublications',
+                'application/json',
+                newPublications
+            ),
+            this.MakeBlipHttpRequestAsync(
+                chatbot,
+                'set',
+                `/buckets/blip_portal:builder_latestpublications:${newPublications.lastInsertedIndex}`,
+                'application/json',
+                {
+                    configuration: application.settings.flow.configuration,
+                    flow: flow
+                }
+            )
+        ];
+        await Promise.all(latestPublicationsRequests);
     }
 
     private async MakeBlipHttpRequestAsync(

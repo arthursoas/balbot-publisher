@@ -22,7 +22,7 @@ export class CsvReader {
                 const chatbot = this._chatbotFactory.Create(
                     data['Id'],
                     data['Key'],
-                    data['ClusterName'])
+                    data['CommandUrl'])
                 results.push(chatbot)
             })
 

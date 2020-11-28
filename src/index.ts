@@ -1,60 +1,21 @@
-import { IFactory } from './factories/iFactory';
-import { CsvReader } from './factories/csvReader/csvReader';
+require('dotenv-safe').config();
+
+import { ChatbotFactory } from './factories/chatbot/chatbotFactory';
 import { CsvReaderFactory } from './factories/csvReader/csvReaderFactory';
-import { Chatbot } from './factories/chatbot/chatbot';
 import { BlipService } from './services/blip/blipService';
-import { IBlipService } from './services/blip/iBlipService';
-import { ILoggerService } from './services/logger/iloggerService';
 import { TextFileLoggerService } from './services/logger/textFileLoggerService';
-import fs from 'fs';
+import { Executor } from './executor';
 
-class Program
-{
-    private _csvReaderFactory: IFactory<CsvReader>;
-    private _blipService: IBlipService;
-    private _loggerService: ILoggerService;
+const CHATBOT_FACTORY = new ChatbotFactory();
+const CSV_READER_FACTORY = new CsvReaderFactory();
+const BLIP_SERVICE = new BlipService();
+const TEXT_FILE_LOGGER_SERVICE = new TextFileLoggerService();
 
-    constructor(
-        csvReaderFactory: IFactory<CsvReader>,
-        blipService: IBlipService,
-        loggerService: ILoggerService
-    ) {
-        this._csvReaderFactory = csvReaderFactory;
-        this._blipService = blipService;
-        this._loggerService = loggerService;
-    }
-
-    async Execute() {
-        const csvReader : CsvReader = this._csvReaderFactory
-            .Create('./chatbots.csv');
-
-        const chatbots: Array<Chatbot> = await csvReader.ReadChatbotsFromCsvAsync();
-
-        const fsPromisses = fs.promises;
-        let balbotFlow: JSON = JSON.parse(
-            await fsPromisses.readFile('./src/resources/balbot.json', {encoding: 'utf-8'})
-        )
-
-        const publishings: Array<Promise<void>> = chatbots.map(async (chatbot) => {
-            try {
-                await this._blipService.UpdateChatbotFlowAsync(chatbot, balbotFlow);
-                await this._blipService.PublishChatbotFlowAsync(chatbot, balbotFlow);
-            }
-            catch (exception: any) {
-                this._loggerService.Error(
-                    'An error ocurred while updating chatbot flow',
-                    exception);
-            }
-        });
-
-        await Promise.all(publishings);
-    }
-}
-
-const program = new Program(
-    new CsvReaderFactory(),
-    new BlipService(),
-    new TextFileLoggerService()
+const executor = new Executor(
+    CHATBOT_FACTORY,
+    CSV_READER_FACTORY,
+    BLIP_SERVICE,
+    TEXT_FILE_LOGGER_SERVICE
 );
 
-program.Execute();
+executor.Execute();

@@ -11,7 +11,7 @@ export class ChatbotFactory implements IFactory<Chatbot>
         const chatbot = new Chatbot()
         chatbot.Id = id;
         chatbot.Key = key;
-        chatbot.ClusterUrl = clusterUri
+        chatbot.CommandUrl = clusterUri
 
         return chatbot;
     }

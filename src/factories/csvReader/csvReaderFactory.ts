@@ -1,16 +1,17 @@
-import { ChatbotFactory } from '../chatbot/chatbotFactory';
+import { Chatbot } from '../chatbot/chatbot';
 import { IFactory } from '../iFactory';
 import { CsvReader } from './csvReader';
 
 export class CsvReaderFactory implements IFactory<CsvReader>
 {
-    Create(...args: string[]) : CsvReader {
-        if (args.length == 0) throw new Error('File path is required');
+    Create(...args: Array<string|IFactory<Chatbot>>) : CsvReader {
+        if (args.length < 2) throw new Error(
+            'Wrong numbe of params. Pass file path and chatbot factory.');
 
-        const [filePath]: string[] = args;
+        const [filePath, chatbotFactory]: Array<string|IFactory<Chatbot>> = args;
 
-        const chatbot = new CsvReader(new ChatbotFactory());
-        chatbot.FilePath = filePath;
+        const chatbot = new CsvReader(chatbotFactory as IFactory<Chatbot>);
+        chatbot.FilePath = filePath as string;
 
         return chatbot;
     }

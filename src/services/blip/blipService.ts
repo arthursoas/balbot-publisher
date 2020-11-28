@@ -39,7 +39,7 @@ export class BlipService implements IBlipService {
 
     private async MakeBlipHttpRequestAsync(chatbot: Chatbot, method: string, uri: string, type: string, resource: any): Promise<void> {
         const response: AxiosResponse<any> = await axios.post(
-            chatbot.ClusterUrl,
+            chatbot.CommandUrl,
             {
                 id: `${chatbot.Id}-${new Date()}`,
                 method: method,
